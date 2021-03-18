@@ -3,6 +3,11 @@ import { ApiWithExecutableKeys } from '@cheep/transport'
 export type Api = {
   Command: {
     GameServer: {
+      /**
+       * Creates new Game
+       * @param sockets - socketIds to join the game
+       * @returns created game id
+       */
       createGame(sockets: string[]): Promise<string>
 
       startGame(id: string): Promise<void>

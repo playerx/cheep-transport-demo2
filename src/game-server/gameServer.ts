@@ -18,16 +18,18 @@ async function run() {
   const handler = createTransportHandler<GameServerApi>(transport)
   const rootApi = createTransportApi<GameServerApi>(transport)
 
+  // state should NOT stored here in real application
+  // instead use Redis, MongoDb, MySQL, Memcached or
+  // any other storage based on your needs
   const state = {
     activeGames: [],
   }
 
-  // handle sendToSocket for a specific region
+  // handle game server Commands and Queries
   handler.on(
     x => x.Command.GameServer.createGame,
     async (api, socketIds) => {
       const newGameId = Date.now().toString()
-
       state.activeGames.push(newGameId)
 
       await api.publish.Event.GameServer.gameCreated({
@@ -46,7 +48,7 @@ async function run() {
 
   await transport.start()
 
-  // Emulate new connection received on every 3 seconds
+  // Simulate new connection received on every 3 seconds
   setInterval(async () => {
     if (!state.activeGames.length) {
       return
