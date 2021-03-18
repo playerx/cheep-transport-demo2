@@ -1,9 +1,15 @@
 import { createTransportHandler } from '@cheep/transport'
-import { NatsTransport } from '@cheep/transport-nats'
+import { RabbitMQTransport } from '@cheep/transport-rabbitmq'
+import { getRegionCode } from '../pusher/pusher.domain'
 import { ServerRemoteApi } from './server.api'
 
 async function run() {
-  const transport = new NatsTransport({ moduleName: 'Server' })
+  const transport = new RabbitMQTransport({
+    moduleName: 'Server',
+    amqpConnectionString: 'amqp://localhost',
+    publishExchangeName: 'Hub',
+    failedMessagesQueueName: 'FailedMessages',
+  })
 
   await transport.init()
 
@@ -34,7 +40,7 @@ async function run() {
       const { id: gameId, socketIds } = props
 
       const tasks = socketIds.map(socketId => {
-        const regionCode = socketId.split('|')[0]
+        const regionCode = getRegionCode(socketId)
 
         return api.publish.Command.Pusher._(regionCode).sendToSocket({
           socketId,
@@ -61,6 +67,11 @@ async function run() {
       state.activeGamesCount--
     },
   )
+
+  await transport.start()
+
+  // Dummy process just to avoid instant exit
+  setInterval(() => {}, 1000)
 
   console.log(`[Server] Started ✅`)
 }

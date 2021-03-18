@@ -2,11 +2,16 @@ import {
   createTransportApi,
   createTransportHandler,
 } from '@cheep/transport'
-import { NatsTransport } from '@cheep/transport-nats'
+import { RabbitMQTransport } from '@cheep/transport-rabbitmq'
 import { GameServerApi } from './gameServer.api'
 
 async function run() {
-  const transport = new NatsTransport({ moduleName: 'Server' })
+  const transport = new RabbitMQTransport({
+    moduleName: 'GameServer',
+    amqpConnectionString: 'amqp://localhost',
+    publishExchangeName: 'Hub',
+    failedMessagesQueueName: 'FailedMessages',
+  })
 
   await transport.init()
 
@@ -40,6 +45,8 @@ async function run() {
     x => x.Query.GameServer.activeGamesCount,
     () => state.activeGames.length,
   )
+
+  await transport.start()
 
   // Emulate new connection received on every 3 seconds
   setInterval(async () => {

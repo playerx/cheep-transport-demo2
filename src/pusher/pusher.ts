@@ -2,11 +2,17 @@ import {
   createTransportApi,
   createTransportHandler,
 } from '@cheep/transport'
-import { NatsTransport } from '@cheep/transport-nats'
+import { RabbitMQTransport } from '@cheep/transport-rabbitmq'
 import { PusherApi } from './pusher.api'
+import { buildSocketId } from './pusher.domain'
 
 async function run(regionCode: string) {
-  const transport = new NatsTransport({ moduleName: 'Server' })
+  const transport = new RabbitMQTransport({
+    moduleName: 'Pusher' + regionCode,
+    amqpConnectionString: 'amqp://localhost',
+    publishExchangeName: 'Hub',
+    failedMessagesQueueName: 'FailedMessages',
+  })
 
   await transport.init()
 
@@ -30,6 +36,8 @@ async function run(regionCode: string) {
     () => state.connectionsCount,
   )
 
+  await transport.start()
+
   // Emulate new connection received on every 3 seconds
   const state = {
     connectionsCount: 0,
@@ -38,9 +46,9 @@ async function run(regionCode: string) {
   setInterval(async () => {
     state.connectionsCount++
     await api.publish.Event.Pusher.socketConnected({
-      socketId: Date.now().toString(),
+      socketId: buildSocketId(regionCode, Date.now().toString()),
     })
-  }, 3000)
+  }, 1000)
 
   console.log(`[Pusher][${regionCode}] Started ✅`)
 }

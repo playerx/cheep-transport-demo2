@@ -6,7 +6,8 @@
   "scripts": {
     "gameServer": "node --require ts-node/register src/game-server/gameServer.ts",
     "server": "node --require ts-node/register src/server/server.ts",
-    "pusher": "node --require ts-node/register src/pusher/pusher.ts"
+    "pusher": "node --require ts-node/register src/pusher/pusher.ts",
+    "logger": "node --require ts-node/register src/logger/logger.ts"
   },
   "author": "",
   "license": "MIT",
