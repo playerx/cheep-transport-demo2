@@ -20,7 +20,7 @@ async function run() {
     activeGamesCount: 0,
   }
 
-  // handle sendToSocket for a specific region
+  // handle Pusher and GameServer events
   handler.on(
     x => x.Event.Pusher.socketConnected,
     async (api, props) => {
