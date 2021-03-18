@@ -23,11 +23,11 @@ async function run(regionCode: string) {
   handler.on(
     x => x.Command.Pusher._(regionCode).sendToSocket,
     (_, props) => {
-      console.log(
-        `[Pusher][${regionCode}] data sent to the socket`,
-        props.socketId,
-        props.data,
-      )
+      // console.log(
+      //   `[Pusher][${regionCode}] data sent to the socket`,
+      //   props.socketId,
+      //   props.data,
+      // )
     },
   )
 

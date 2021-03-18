@@ -35,8 +35,6 @@ async function run() {
         socketIds,
       })
 
-      console.log('[GameServer] New game created', newGameId)
-
       return newGameId
     },
   )
